@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Virtual - Profesorado en Educación Primaria</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      background: #e4e0e0;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    h1, h2, h3, h4 {
+      color: #1a3c34;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 2em;
+    }
+
+    h3 {
+      font-size: 1.5em;
+    }
+
+    h4 {
+      font-size: 1.3em;
+    }
+
+    input, button {
+      padding: 14px;
+      margin: 12px 0;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input {
+      border: 2px solid #e0e0e0;
+      background: #f9f9f9;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #104943;
+      background: #ffffff;
+      box-shadow: 0 0 8px rgba(38, 166, 154, 0.2);
+    }
+
+    button {
+      background: #26a69a;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 4px 10px rgba(38, 166, 154, 0.3);
+    }
+
+    button:hover {
+      background: #2bbbad;
+      transform: scale(1.02);
+      box-shadow: 0 6px 15px rgba(38, 166, 154, 0.4);
+    }
+
+    button:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 5px rgba(38, 166, 154, 0.2);
+    }
+
+    #dashboard-screen .card button:last-child {
+      background: #ef5350;
+    }
+
+    #dashboard-screen .card button:last-child:hover {
+      background: #f44336;
+      box-shadow: 0 6px 15px rgba(244, 67, 54, 0.4);
+    }
+
+    #dashboard-screen .card {
+      text-align: center;
+    }
+
+    #dashboard-screen .card h2 {
+      margin-bottom: 30px;
+      color: #00695c;
+    }
+
+    #dashboard-screen .card button {
+      display: block;
+      width: 250px;
+      margin: 15px auto;
+      padding: 16px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    #dashboard-screen .card button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .study-plan-year {
+      margin: 25px 0;
+      padding: 30px;
+      background: #f5f5f5;
+      border-radius: 12px;
+      border-left: 6px solid #00695c;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .study-plan-year:nth-child(odd) {
+      border-left-color: #0288d1;
+    }
+
+    .study-plan-year h4 {
+      color: #004d40;
+      margin-bottom: 15px;
+      font-size: 1.4em;
+    }
+
+    .study-plan-year ul li {
+      margin-bottom: 12px;
+      font-size: 1.1em;
+      color: #37474f;
+      line-height: 1.6;
+      list-style: disc;
+      padding-left: 25px;
+    }
+
+    .academic-status {
+      margin-top: 30px;
+    }
+
+    .academic-status h4 {
+      color: #004d40;
+      font-size: 1.5em;
+      margin: 25px 0 15px;
+    }
+
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+
+    .status-table th,
+    .status-table td {
+      padding: 20px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.1em;
+      color: #37474f;
+    }
+
+    .status-table th {
+      background: #26a69a;
+      color: white;
+      font-weight: 600;
+    }
+
+    .status-table tr:hover {
+      background: #f5f5f5;
+    }
+
+    .status-table .status {
+      font-weight: 500;
+    }
+
+    .status-table .status.promocionada { color: #2e7d32; }
+    .status-table .status.aprobada { color: #388e3c; }
+    .status-table .status.regularizada { color: #0288d1; }
+    .status-table .status.en-proceso { color: #f57c00; }
+    .status-table .status.recursa { color: #d32f2f; }
+
+    .no-grades {
+      color: #78909c;
+      font-style: italic;
+      text-align: center;
+      font-size: 1.2em;
+      margin: 30px 0;
+    }
+
+    #study-plan-screen .card button,
+    #action-screen .card button {
+      background: #0288d1;
+      width: 220px;
+      margin: 25px auto 0;
+      padding: 16px;
+      font-size: 1.2em;
+      display: block;
+    }
+
+    #study-plan-screen .card button:hover,
+    #action-screen .card button:hover {
+      background: #039be5;
+      box-shadow: 0 6px 15px rgba(3, 155, 229, 0.4);
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .screen {
+        padding: 15px;
+      }
+
+      .card {
+        padding: 25px;
+        max-width: 90%;
+      }
+
+      h1 {
+        font-size: 2.2em;
+      }
+
+      h2 {
+        font-size: 1.8em;
+      }
+
+      h3 {
+        font-size: 1.4em;
+      }
+
+      h4 {
+        font-size: 1.3em;
+      }
+
+      input, button {
+        font-size: 15px;
+        padding: 12px;
+        margin: 10px 0;
+      }
+
+      #dashboard-screen .card button {
+        width: 100%;
+        max-width: 280px;
+        margin: 12px auto;
+        padding: 14px;
+        font-size: 1.1em;
+      }
+
+      .study-plan-year {
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .study-plan-year ul li {
+        font-size: 1em;
+        padding-left: 20px;
+        line-height: 1.5;
+      }
+
+      .academic-status {
+        margin-top: 20px;
+      }
+
+      .academic-status h4 {
+        font-size: 1.4em;
+        margin: 20px 0 12px;
+      }
+
+      .status-table {
+        display: table;
+        overflow-x: auto;
+        margin-bottom: 25px;
+      }
+
+      .status-table th,
+      .status-table td {
+        padding: 15px;
+        font-size: 1em;
+        min-width: 120px;
+      }
+
+      .status-table th {
+        font-size: 1.1em;
+      }
+
+      .no-grades {
+        font-size: 1.1em;
+        margin: 25px 0;
+      }
+
+      #study-plan-screen .card button,
+      #action-screen .card button {
+        width: 100%;
+        max-width: 260px;
+        padding: 14px;
+        font-size: 1.1em;
+        margin: 20px auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .screen {
+        padding: 10px;
+      }
+
+      .card {
+        padding: 20px;
+        max-width: 95%;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      h2 {
+        font-size: 1.6em;
+      }
+
+      h3 {
+        font-size: 1.3em;
+      }
+
+      h4 {
+        font-size: 1.2em;
+      }
+
+      input, button {
+        font-size: 14px;
+        padding: 10px;
+        margin: 8px 0;
+      }
+
+      #dashboard-screen .card button {
+        width: 100%;
+        max-width: 240px;
+        padding: 12px;
+        font-size: 1em;
+      }
+
+      .study-plan-year {
+        padding: 15px;
+        margin: 15px 0;
+      }
+
+      .study-plan-year ul li {
+        font-size: 0.95em;
+        padding-left: 15px;
+        line-height: 1.4;
+      }
+
+      .academic-status {
+        margin-top: 15px;
+      }
+
+      .academic-status h4 {
+        font-size: 1.3em;
+        margin: 15px 0 10px;
+      }
+
+      .status-table {
+        display: table;
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .status-table th,
+      .status-table td {
+        padding: 12px;
+        font-size: 0.95em;
+        min-width: 100px;
+      }
+
+      .status-table th {
+        font-size: 1em;
+      }
+
+      .no-grades {
+        font-size: 1em;
+        margin: 20px 0;
+      }
+
+      #study-plan-screen .card button,
+      #action-screen .card button {
+        width: 100%;
+        max-width: 220px;
+        padding: 12px;
+        font-size: 1em;
+        margin: 15px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla de Login -->
+  <div id="login-screen" class="screen active">
+    <div class="card">
+      <h1>Campus Virtual</h1>
+      <div class="form-group">
+        <input id="email" type="email" placeholder="Correo">
+        <input id="password" type="password" placeholder="Contraseña">
+        <button onclick="login()">Iniciar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pantalla de Dashboard -->
+  <div id="dashboard-screen" class="screen">
+    <div class="card">
+      <h2 id="welcome-message"></h2>
+      <br>
+      <button onclick="showStudyPlan()">Ver Plan de Estudio</button>
+      <button onclick="showActionScreen()">Ver Estado Académico</button>
+      <button onclick="downloadCorrelativityPDF()">Correlatividad</button>
+      <button onclick="logout()">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <!-- Pantalla de Plan de Estudios -->
+  <div id="study-plan-screen" class="screen">
+    <div class="card">
+      <h2>Plan de Estudio</h2>
+      <div id="study-plan-content"></div>
+      <button onclick="showDashboard()">Volver</button>
+    </div>
+  </div>
+
+  <!-- Pantalla de Estado Académico -->
+  <div id="action-screen" class="screen">
+    <div class="card">
+      <h2>Estado Académico</h2>
+      <div id="academic-status-content" class="academic-status"></div>
+      <button onclick="showDashboard()">Volver</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+  <script>
+    const pb = new PocketBase('http://127.0.0.1:8090');
+    pb.autoCancellation(false);
+    let currentUser = null;
+
+    // Mostrar pantallas
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // Dashboard
+    function showDashboard() {
+      showScreen('dashboard-screen');
+    }
+
+    // Login
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      if (!email || !password) {
+        alert('Por favor, completa todos los campos.');
+        return;
+      }
+      try {
+        const authData = await pb.collection('students').authWithPassword(email, password);
+        currentUser = authData.record;
+        console.log('Usuario autenticado:', currentUser);
+        document.getElementById('welcome-message').textContent = `Bienvenido/a, ${currentUser.name}`;
+        showDashboard();
+      } catch (error) {
+        console.error('Error de autenticación:', error);
+        alert(`Error al iniciar sesión: ${error.message}`);
+      }
+    }
+
+    // Logout
+    async function logout() {
+      pb.authStore.clear();
+      currentUser = null;
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+      showScreen('login-screen');
+    }
+
+    // Plan de Estudios
+    async function showStudyPlan() {
+      const content = document.getElementById('study-plan-content');
+      content.innerHTML = `
+        <h3>Profesorado en Educación Primaria (Resol. N° 3160/07)</h3>
+        <div class="study-plan-year">
+          <h4>Primer Año</h4>
+          <ul>
+            <li>Taller de lectura, escritura y oralidad</li>
+            <li>Taller de pensamiento lógico matemático</li>
+            <li>Taller de definición institucional</li>
+            <li>Filosofía</li>
+            <li>Didáctica General</li>
+            <li>Pedagogía</li>
+            <li>Análisis del mundo contemporáneo</li>
+            <li>Psicología del desarrollo y del aprendizaje I</li>
+            <li>Corporeidad y Motricidad</li>
+            <li>Arte y educación</li>
+            <li>Campo de la Práctica Docente: Práctica en terreno, Taller integrador interdisciplinario, Herramientas de la Práctica: Taller de Educación social y estrategias de educación popular</li>
+          </ul>
+        </div>
+        <div class="study-plan-year">
+          <h4>Segundo Año</h4>
+          <ul>
+            <li>Teorías sociopolíticas y educación</li>
+            <li>Didáctica y Currículum de Nivel Primario</li>
+            <li>Psicología del desarrollo y del aprendizaje II</li>
+            <li>Psicología social e institucional</li>
+            <li>Cultura, comunicación y educación</li>
+            <li>Educación artística</li>
+            <li>Didáctica de las Prácticas del Lenguaje y la Literatura I</li>
+            <li>Didáctica de las Ciencias Sociales I</li>
+            <li>Didáctica de las Ciencias Naturales I</li>
+            <li>Didáctica de la Matemática I y II</li>
+            <li>Campo de la Práctica Docente: Práctica en terreno, Taller integrador interdisciplinario, Herramientas de la Práctica: Aproximación y análisis cualitativo institucional</li>
+          </ul>
+        </div>
+        <div class="study-plan-year">
+          <h4>Tercer Año</h4>
+          <ul>
+            <li>Historia y prospectiva de la educación</li>
+            <li>Políticas, legislación y administración del trabajo escolar</li>
+            <li>Configuraciones culturales del sujeto educativo de Primaria</li>
+            <li>Medios audiovisuales, TIC´s y educación</li>
+            <li>Educación Física Escolar</li>
+            <li>Didáctica de Prácticas del Lenguaje y la Literatura II</li>
+            <li>Didáctica de las Ciencias Sociales II</li>
+            <li>Didáctica de las Ciencias Naturales II</li>
+            <li>Didáctica de la Matemática I y II</li>
+            <li>Campo de la Práctica Docente: Práctica en terreno, Taller integrador interdisciplinario, Herramientas de la Práctica: Investigación en y para la acción docente</li>
+          </ul>
+        </div>
+        <div class="study-plan-year">
+          <h4>Cuarto Año</h4>
+          <ul>
+            <li>Reflexión filosófica de la educación</li>
+            <li>Dimensión ético-política de la praxis docente</li>
+            <li>Pedagogía crítica de las diferencias</li>
+            <li>Ateneo de Prácticas del Lenguaje y de Literatura</li>
+            <li>Ateneo de Matemática</li>
+            <li>Ateneo de Ciencias sociales</li>
+            <li>Ateneo de Ciencias Naturales</li>
+            <li>Campo de la Práctica Docente: Práctica en terreno, Taller integrador interdisciplinario</li>
+          </ul>
+        </div>
+      `;
+      showScreen('study-plan-screen');
+    }
+
+    // Estado Académico
+    async function showActionScreen() {
+      const content = document.getElementById('academic-status-content');
+      content.innerHTML = '';
+
+      if (!currentUser) {
+        content.innerHTML = '<p class="no-grades">Error: No estás autenticado. Por favor, inicia sesión nuevamente.</p>';
+        showScreen('action-screen');
+        return;
+      }
+
+      try {
+        console.log('Consultando academic_status para student ID:', currentUser.id);
+        const academicStatus = await pb.collection('academic_status').getFullList({
+          filter: `student = "${currentUser.id}"`,
+          sort: 'subject,year'
+        });
+
+        console.log('Registros obtenidos:', academicStatus);
+
+        if (academicStatus.length === 0) {
+          content.innerHTML = '<p class="no-grades">No tienes estados académicos registrados. Contacta al administrador.</p>';
+          showScreen('action-screen');
+          return;
+        }
+
+        const years = {
+          'Primer año': [],
+          'Segundo año': [],
+          'Tercer año': [],
+          'Cuarto año': []
+        };
+
+        academicStatus.forEach(status => {
+          const yearKey = status.year.toLowerCase();
+          const normalizedYears = Object.keys(years).reduce((acc, key) => {
+            acc[key.toLowerCase()] = key;
+            return acc;
+          }, {});
+          
+          if (normalizedYears[yearKey]) {
+            years[normalizedYears[yearKey]].push(status);
+          } else {
+            console.warn(`Año no reconocido: ${status.year}`);
+          }
+        });
+
+        let htmlContent = '';
+        for (const [year, subjects] of Object.entries(years)) {
+          if (subjects.length === 0) continue;
+
+          htmlContent += `
+            <h4>${year}</h4>
+            <table class="status-table">
+              <thead>
+                <tr>
+                  <th>Materia</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          subjects.forEach(subject => {
+            const statusClass = subject.status.toLowerCase().replace(' ', '-');
+            htmlContent += `
+              <tr>
+                <td>${subject.subject}</td>
+                <td class="status ${statusClass}">${subject.status}</td>
+              </tr>
+            `;
+          });
+
+          htmlContent += `
+              </tbody>
+            </table>
+          `;
+        }
+
+        content.innerHTML = htmlContent || '<p class="no-grades">No hay materias registradas para los años esperados.</p>';
+        showScreen('action-screen');
+      } catch (error) {
+        console.error('Error al cargar academic_status:', error);
+        content.innerHTML = `<p class="no-grades">Error al cargar el estado académico: ${error.message}</p>`;
+        showScreen('action-screen');
+      }
+    }
+
+    // Descarga del PDF de Correlatividad
+    function downloadCorrelativityPDF() {
+      const pdfUrl = 'https://drive.google.com/uc?export=download&id=1Ymu_XFNlQI3FCewWEW9wxC2g0dJ9v5kk';
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = 'Correlatividad_Profesorado_Educacion_Primaria.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Verificar autenticación
+    pb.authStore.onChange((auth) => {
+      if (auth && pb.authStore.model) {
+        currentUser = pb.authStore.model;
+        document.getElementById('welcome-message').textContent = `Bienvenido/a, ${currentUser.name}`;
+        showDashboard();
+      } else {
+        currentUser = null;
+        showScreen('login-screen');
+      }
+    });
+  </script>
+</body>
+</html>
